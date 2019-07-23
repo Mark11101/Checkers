@@ -1,0 +1,43 @@
+body {
+    background-color: #282d33;
+}
+
+.board {
+    background-color: #ffac4c;
+    width: 800px;
+    height: 800px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
+.cells div {
+    position: absolute;
+    background-color: #5a3a00;
+    width: 100px;
+    height: 100px;
+}
+
+.checkers__firstPlayer div, .checkers__secondPlayer div {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background-color: #000000;
+    background-size: 65%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    transition: all 0.2s linear;
+    margin-top: 13px;
+    margin-left: 13px;
+    cursor: pointer;
+    border: 1vmin solid #282d33;
+}
+
+.checkers__secondPlayer div {
+    background-color: #ffffff;
+}
