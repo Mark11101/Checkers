@@ -1,7 +1,7 @@
 let checkers = {};
 let cells = {};
 
-function drawBoard() {
+(function drawBoard() {
 
     for (let i = 0; i < 8; i++) {
 
@@ -19,6 +19,7 @@ function drawBoard() {
             cells[cellCnt].push(cellCnt);
             cells[cellCnt].id = cellCnt;
             cells[cellCnt].cellNumber = cellCnt;
+            cells[cellCnt].position.number = cellCnt;
             cells[cellCnt].position.left = positions[cellCnt].left;
             cells[cellCnt].position.top = positions[cellCnt].top;
             cells[cellCnt].slashDiagonal = slashDiagonal[cellCnt];
@@ -56,7 +57,7 @@ function drawBoard() {
         checkers[i].slashDiagonal = slashDiagonal[i];
         checkers[i].backSlashDiagonal = backslashDiagonal[i];
 
-        if (i < 13) {
+        if (i < 13) { // в зависимости от условия добавляем белые или черные шашки
 
             const firstChecker = document.createElement("div");
             firstChecker.id = checkers[i].id;
@@ -78,6 +79,9 @@ function drawBoard() {
             checkers[i].cellNumber = i + 8;
             checkers[i].position.number = i + 8;
 
+            checkers[i].slashDiagonal++;
+            checkers[i].backSlashDiagonal++;
+
             const secondChecker = document.createElement("div");
             secondChecker.id = checkers[i].id;
             secondChecker.className = 'checker white';
@@ -93,57 +97,140 @@ function drawBoard() {
     }
 
     information();
-}
 
-drawBoard();
+}());
 
 $('.checker').on('click', (checker) => {
 
-    $('.checker').each(() => {                      // Для правильной работы нужно добавить класс selected для выбранной
+    $('.checker').each(() => {                // Для правильной работы нужно добавить класс selected для выбранной
        $('.checker').removeClass('selected'); // клетки, но перед этим необходимо удалить этот класс у других клеток
     });
 
-    $(checker.currentTarget).addClass('selected');
+    if ($(checker.currentTarget).parent().hasClass('turn')) {
+        $(checker.currentTarget).addClass('selected');
+    }
 
     $('.cell').on('click', (cell) => {
 
+        //alert("here");
+
+        let canMove = $(checker.currentTarget).parent().hasClass('turn');
+
         let idChecker = checker.currentTarget.id;
-        let idCell = cell.currentTarget.id.replace(/[^\d]/g, '');
+        let idCell = cell.currentTarget.id.replace(/[^\d]/g, ''); // нужно записать число, т.к. id="cell-1" удаляяем лишние символы
 
         let checkerSlashDiagonal = checkers[idChecker].slashDiagonal;         // номер слэш-диагонали шашки
         let checkerBackSlashDiagonal = checkers[idChecker].backSlashDiagonal; // номер бэк-слэш-диагонали шашки
         let cellSlashDiagonal = cells[idCell].slashDiagonal;                  // номер слэш-диагонали клетки
-        let cellBackSlashDiagonal = cells[idCell].backSlashDiagonal;   // номер бэк-слэш-диагонали клетки
+        let cellBackSlashDiagonal = cells[idCell].backSlashDiagonal;          // номер бэк-слэш-диагонали клетки
 
-        let isSlashDiagonal = checkerSlashDiagonal === cellSlashDiagonal;             // Проверка на то, что игрок нажал
-        let isBackSlashDiagonal = checkerBackSlashDiagonal === cellBackSlashDiagonal; // на правильную диагональ
+        let isSlashDiagonal = +checkerSlashDiagonal === +cellSlashDiagonal;             // Проверка на то, что игрок нажал
+        let isBackSlashDiagonal = +checkerBackSlashDiagonal === +cellBackSlashDiagonal; // на правильную диагональ
+
+        let isCorrectDiagonal = isSlashDiagonal || isBackSlashDiagonal;
 
         let cellPosition = cells[idCell].cellNumber;          // позиция клетки
-        let checkerPosition = checkers[idChecker].cellNumber; // позиция шашки
+        let checkerPosition = checkers[idChecker].cellNumber; // позиция шашки на клетке
 
-        let threeDifferenceBlack = +cellPosition === +checkerPosition + 3; // Расчет разницы между номером клетки, на которую
-        let fourDifferenceBlack = +cellPosition === +checkerPosition + 4;  // хочет сходить игрок, и номером шашки. Это
-        let fiveDifferenceBlack = +cellPosition === +checkerPosition + 5;  // необходимо для того, чтобы шашки не вели себя как дамки
+        let selectedCellRowID = $(cell.currentTarget).parent().attr("id").replace(/[^\d]/g, ''); // находим номер строки нажатой клетки
+        let selectedCheckerRowID = $('#cell-' + checkerPosition).parent().attr("id").replace(/[^\d]/g, ''); // и шашки
 
-        let threeDifferenceWhite = +cellPosition === +checkerPosition - 3; // То же самое для белых шашек
-        let fourDifferenceWhite = +cellPosition === +checkerPosition - 4;
-        let fiveDifferenceWhite = +cellPosition === +checkerPosition - 5;
+        let isMoveBack; // был ли ход назад
+        let isNextRow;  // является ли строка нажатой клетки следующей относительно шашки
+        let isAfterNextRow;
 
-        let isBlack = $(checker.currentTarget).hasClass('black'); // Проверка на цвет нужна, чтобы шашки не могли
-        let isWhite = $(checker.currentTarget).hasClass('white'); // ходить назад
+        let beatenCellNum; // номер клетки, на которой стоит битая шашка
+        let beatenCheckerID;  // ее ID
 
-        let isRegularBlackChecker = (threeDifferenceBlack || fourDifferenceBlack || fiveDifferenceBlack) && isBlack;
-        let isRegularWhiteChecker = (threeDifferenceWhite || fourDifferenceWhite || fiveDifferenceWhite) && isWhite;
+        if ($(checker.currentTarget).hasClass('black')) {
 
-        let isRegularChecker = isRegularBlackChecker || isRegularWhiteChecker;
+            isMoveBack = checkerPosition > cellPosition;
+
+            isNextRow = (selectedCellRowID - selectedCheckerRowID) === 1;
+            isAfterNextRow = (selectedCellRowID - selectedCheckerRowID) === 2;
+
+            if (selectedCellRowID % 2 === 0) {
+
+                if (isBackSlashDiagonal) {       // если номер строки нажатой клетки четный и действия происходят на
+                    beatenCellNum = idCell - 4;  // бэк-слэш диагонали
+                } else {
+                    beatenCellNum = idCell - 3;
+                }
+
+            } else {
+
+                if (isBackSlashDiagonal) {
+                    beatenCellNum = idCell - 5;
+                } else {
+                    beatenCellNum = idCell - 4;
+                }
+            }
+        }
+
+        if ($(checker.currentTarget).hasClass('white')) {
+
+            isMoveBack = checkerPosition < cellPosition;
+
+            isNextRow = (selectedCheckerRowID - selectedCellRowID) === 1;
+            isAfterNextRow = (selectedCheckerRowID - selectedCellRowID) === 2;
+
+            if (selectedCellRowID % 2 === 0) {
+
+                if (isBackSlashDiagonal) {       // если номер строки нажатой клетки четный и действия происходят на
+                    beatenCellNum = +idCell + 5;  // бэк-слэш диагонали
+                } else {
+                    beatenCellNum = +idCell + 4;
+                }
+
+            } else {
+
+                if (isSlashDiagonal) {
+                    beatenCellNum = +idCell + 3;
+                } else {
+                    beatenCellNum = +idCell + 4;
+                }
+            }
+        }
 
         let isSelected = $(checker.currentTarget).hasClass('selected');
                                                                                // Нужно для того, чтобы шашка не
         let cellHasChecker = $(cell.currentTarget).hasClass('hasChecker');     // смогла сходить на занятую клетку
 
-        if (isRegularChecker && (isSlashDiagonal || isBackSlashDiagonal) && isSelected && !cellHasChecker) {
+        // ход с взятием шашки соперника
+        if (isCorrectDiagonal && isSelected && !cellHasChecker && !isMoveBack && isAfterNextRow && canMove) {
 
-            $(checker.currentTarget).css({        // При соблюдении всех условий шашка смещается на позицию
+            let ownCheckerBeaten = false;
+
+            if ($('#cell-' + beatenCellNum).hasClass('hasChecker')) {
+                for (let i in checkers) {
+                    if ((checkers[i].cellNumber === beatenCellNum)) {
+
+                        if (((checkers[i].id > 12) && (idChecker < 13)) || ((checkers[i].id < 13) && (idChecker > 12))) {
+                            beatenCheckerID = checkers[i].id;
+                        } else {
+                            ownCheckerBeaten = true;
+                        }
+
+                        break;
+                    }
+                }
+
+                $('#' + beatenCheckerID).css('display', 'none');
+                $('#cell-' + beatenCellNum).removeClass('hasChecker');
+            }
+
+            if (!ownCheckerBeaten) {
+                makeMove();
+            }
+        }
+
+        // обычный ход
+        if (isCorrectDiagonal && isSelected && !cellHasChecker && !isMoveBack && isNextRow && canMove) {
+            makeMove();
+        }
+
+        function makeMove() {
+            $(checker.currentTarget).css({           // При соблюдении всех условий шашка смещается на позицию
                 left: cells[idCell].position.left,   // выбранной клетки. Позиционирование происходит путем выбора
                 top: cells[idCell].position.top,     // позиции нужной клетки из объекта positions
             });
@@ -152,23 +239,26 @@ $('.checker').on('click', (checker) => {
 
             $('#cell-' + checkerPosition).removeClass('hasChecker');
 
-            checkers[idChecker] = {
-              id: idChecker,
-              cellNumber: cellPosition,                // меняем значения атрибутов клетки
-              slashDiagonal: cellSlashDiagonal,
-              backSlashDiagonal: cellBackSlashDiagonal,
-              "position": {
-                  number: cellPosition
-              }
+            checkers[idChecker] = {                     // обновляем значения свойств объекта
+                id: idChecker,
+                cellNumber: cellPosition,
+                slashDiagonal: cellSlashDiagonal,
+                backSlashDiagonal: cellBackSlashDiagonal,
+                "position": {
+                    number: cellPosition
+                }
             };
+
+            $('.checkers__firstPlayer').toggleClass('turn');
+            $('.checkers__secondPlayer').toggleClass('turn');
         }
 
         $(checker.currentTarget).removeClass('selected');
 
         information();
+
+        return;
     });
-
-
 });
 
 function information() {
@@ -192,6 +282,7 @@ function information() {
         console.log(
             " id: " + cells[i].id +
             " cellNumber: " + cells[i].cellNumber +
+            " position: " + cells[i].position.number +
             " slashDiagonal: " + cells[i].slashDiagonal +
             " backSlashDiagonal: " + cells[i].backSlashDiagonal
         );

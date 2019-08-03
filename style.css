@@ -41,3 +41,7 @@ body {
 .checkers__secondPlayer div {
     background-color: #ffffff;
 }
+
+.checkers__firstPlayer .selected, .checkers__secondPlayer .selected {
+    box-shadow: 0 0 10px 5px #60dafb;
+}
