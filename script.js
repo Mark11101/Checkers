@@ -1,66 +1,98 @@
+let checkers = {};
+let cells = {};
+
 function drawBoard() {
+
     for (let i = 0; i < 8; i++) {
+
         const row = document.createElement("div");
         row.id = "row-" + i;
 
-        document.querySelector(".cells").appendChild(row); // добавляем строку, в которой будут ячейки
-        document.querySelector("#row-" + i).style.marginTop = 100 * i + "px"; // размещаем строки по рядам
+        $('.cells').append(row); // добавляем строку, в которой будут ячейки
 
         let cellCnt = i * 4 + 1; // инициализируем счетчик ячеек
 
         for (let j = 0; j < 4; j++) {
+
+            cells[cellCnt] = [];
+            cells[cellCnt].position = [];
+            cells[cellCnt].push(cellCnt);
+            cells[cellCnt].id = cellCnt;
+            cells[cellCnt].cellNumber = cellCnt;
+            cells[cellCnt].position.left = positions[cellCnt].left;
+            cells[cellCnt].position.top = positions[cellCnt].top;
+            cells[cellCnt].slashDiagonal = slashDiagonal[cellCnt];
+            cells[cellCnt].backSlashDiagonal = backslashDiagonal[cellCnt];
+
             const cell = document.createElement("div");
             cell.id = "cell-" + cellCnt;
-            cell.className = "cell";
-            cell.setAttribute('data-cellNumber', cellCnt); // позиция клетки на доске
-            cell.setAttribute('data-slash-diagonal', slashDiagonal[cellCnt]); // номер слэш-диагонали
-            cell.setAttribute('data-back-slash-diagonal', backslashDiagonal[cellCnt]); // номер бэк-слэш-диагонали
+            cell.className = 'cell';
 
-            document.querySelector("#row-" + i).appendChild(cell); // добавляем ячейку
-            document.querySelector("#cell-" + cellCnt).style.left = 200 * j + "px"; // смещаем ее относительно соседней
+            $('#row-' + i).css('marginTop', 100 * i + 'px').append(cell); // размещаем строки по рядам и добавляем ячейку
 
-            document.querySelector("#cell-" + cellCnt).textContent = String(cellCnt); // УДАЛИТЬ
-            document.querySelector("#cell-" + cellCnt).style.color = "white"; // добавлено для облегчения работы
+            $('#cell-' + cellCnt).text(String(cellCnt)).css({
+                left: 200 * j + "px",    // смещаем ее относительно соседней
+                color: "white"
+            });
 
             cellCnt++;
         }
 
         if (i % 2 === 0) { // добавляем отступ четным рядам
-            document.querySelector("#row-" + i).style.marginLeft = 100 + "px";
+            $('#row-' + i).css('marginLeft', 100 + 'px');
         }
     }
 
-    for (let i = 1; i < 13; i++) {
-        const checkerFirstPlayer = document.createElement("div");
+    for (let i = 1; i < 25; i++) {
 
-        checkerFirstPlayer.id = "checker-" + i;
-        checkerFirstPlayer.className = "checker black";
+        checkers[i] = [];
+        checkers[i].position = [];
+        checkers[i].push(i);
+        checkers[i].id = i;
+        checkers[i].cellNumber = i;
+        checkers[i].position.number = i;
+        checkers[i].position.left = positions[i].left;
+        checkers[i].position.top = positions[i].top;
+        checkers[i].slashDiagonal = slashDiagonal[i];
+        checkers[i].backSlashDiagonal = backslashDiagonal[i];
 
-        checkerFirstPlayer.setAttribute('data-cellNumber', String(i));
-        checkerFirstPlayer.setAttribute('data-slash-diagonal', slashDiagonal[i]);
-        checkerFirstPlayer.setAttribute('data-back-slash-diagonal', backslashDiagonal[i]);
+        if (i < 13) {
 
-        document.querySelector(".checkers__firstPlayer").appendChild(checkerFirstPlayer); // добавляем шашки
-        document.querySelector("#checker-" + i).style.left = positions[i].left; // и позиционируем их
-        document.querySelector("#checker-" + i).style.top = positions[i].top;
+            const firstChecker = document.createElement("div");
+            firstChecker.id = checkers[i].id;
+            firstChecker.className = 'checker black';
 
-        document.querySelector('#cell-' + i).classList.add('haschecker');
+            $('.checkers__firstPlayer').append(firstChecker);      // добавляем шашки
+            $('#' + i).css({                                       // и позиционируем их
+                left: checkers[i].position.left,
+                top: checkers[i].position.top
+            });
 
-        const checkerSecondPlayer = document.createElement("div"); // то же самое для второго игрока
+            $('#cell-' + i).addClass('hasChecker');
 
-        checkerSecondPlayer.id = "checker-" + (i + 12);
-        checkerSecondPlayer.className = "checker white";
+        } else {
 
-        checkerSecondPlayer.setAttribute('data-cellNumber', String(i + 20));
-        checkerSecondPlayer.setAttribute('data-slash-diagonal', slashDiagonal[i + 20]);
-        checkerSecondPlayer.setAttribute('data-back-slash-diagonal', backslashDiagonal[i + 20]);
+            checkers[i].position.left = positions[i + 8].left;
+            checkers[i].position.top = positions[i + 8].top;
 
-        document.querySelector(".checkers__secondPlayer").appendChild(checkerSecondPlayer);
-        document.querySelector("#checker-" + (i + 12)).style.left = positions[i + 20].left;
-        document.querySelector("#checker-" + (i + 12)).style.top = positions[i + 20].top;
+            checkers[i].cellNumber = i + 8;
+            checkers[i].position.number = i + 8;
 
-        document.querySelector('#cell-' + (i + 20)).classList.add('haschecker');
+            const secondChecker = document.createElement("div");
+            secondChecker.id = checkers[i].id;
+            secondChecker.className = 'checker white';
+
+            $('.checkers__secondPlayer').append(secondChecker);
+            $('#' + i).css({
+                left: checkers[i].position.left,
+                top: checkers[i].position.top
+            });
+
+            $('#cell-' + (i + 8)).addClass('hasChecker');
+        }
     }
+
+    information();
 }
 
 drawBoard();
@@ -74,16 +106,20 @@ $('.checker').on('click', (checker) => {
     $(checker.currentTarget).addClass('selected');
 
     $('.cell').on('click', (cell) => {
-        let checkerSlashDiagonal = checker.currentTarget.dataset.slashDiagonal;         // номер слэш-диагонали шашки
-        let checkerBackSlashDiagonal = checker.currentTarget.dataset.backSlashDiagonal; // номер бэк-слэш-диагонали шашки
-        let cellSlashDiagonal = cell.currentTarget.dataset.slashDiagonal;           // номер слэш-диагонали клетки
-        let cellBackSlashDiagonal = cell.currentTarget.dataset.backSlashDiagonal;   // номер бэк-слэш-диагонали клетки
+
+        let idChecker = checker.currentTarget.id;
+        let idCell = cell.currentTarget.id.replace(/[^\d]/g, '');
+
+        let checkerSlashDiagonal = checkers[idChecker].slashDiagonal;         // номер слэш-диагонали шашки
+        let checkerBackSlashDiagonal = checkers[idChecker].backSlashDiagonal; // номер бэк-слэш-диагонали шашки
+        let cellSlashDiagonal = cells[idCell].slashDiagonal;                  // номер слэш-диагонали клетки
+        let cellBackSlashDiagonal = cells[idCell].backSlashDiagonal;   // номер бэк-слэш-диагонали клетки
 
         let isSlashDiagonal = checkerSlashDiagonal === cellSlashDiagonal;             // Проверка на то, что игрок нажал
         let isBackSlashDiagonal = checkerBackSlashDiagonal === cellBackSlashDiagonal; // на правильную диагональ
 
-        let cellPosition = cell.currentTarget.dataset.cellnumber;                   // позиция клетки
-        let checkerPosition = checker.currentTarget.dataset.cellnumber;                 // позиция шашки
+        let cellPosition = cells[idCell].cellNumber;          // позиция клетки
+        let checkerPosition = checkers[idChecker].cellNumber; // позиция шашки
 
         let threeDifferenceBlack = +cellPosition === +checkerPosition + 3; // Расчет разницы между номером клетки, на которую
         let fourDifferenceBlack = +cellPosition === +checkerPosition + 4;  // хочет сходить игрок, и номером шашки. Это
@@ -96,33 +132,70 @@ $('.checker').on('click', (checker) => {
         let isBlack = $(checker.currentTarget).hasClass('black'); // Проверка на цвет нужна, чтобы шашки не могли
         let isWhite = $(checker.currentTarget).hasClass('white'); // ходить назад
 
-        let isRegularBlackchecker = (threeDifferenceBlack || fourDifferenceBlack || fiveDifferenceBlack) && isBlack;
-        let isRegularWhitechecker = (threeDifferenceWhite || fourDifferenceWhite || fiveDifferenceWhite) && isWhite;
+        let isRegularBlackChecker = (threeDifferenceBlack || fourDifferenceBlack || fiveDifferenceBlack) && isBlack;
+        let isRegularWhiteChecker = (threeDifferenceWhite || fourDifferenceWhite || fiveDifferenceWhite) && isWhite;
 
-        let isRegularchecker = isRegularBlackchecker || isRegularWhitechecker;
+        let isRegularChecker = isRegularBlackChecker || isRegularWhiteChecker;
 
         let isSelected = $(checker.currentTarget).hasClass('selected');
                                                                                // Нужно для того, чтобы шашка не
-        let cellHaschecker = $(cell.currentTarget).hasClass('haschecker'); // смогла сходить на занятую клетку
+        let cellHasChecker = $(cell.currentTarget).hasClass('hasChecker');     // смогла сходить на занятую клетку
 
-        if (isRegularchecker && (isSlashDiagonal || isBackSlashDiagonal) && isSelected && !cellHaschecker) {
+        if (isRegularChecker && (isSlashDiagonal || isBackSlashDiagonal) && isSelected && !cellHasChecker) {
+
             $(checker.currentTarget).css({        // При соблюдении всех условий шашка смещается на позицию
-                left: positions[cellPosition].left,   // выбранной клетки. Позиционирование происходит путем выбора
-                top: positions[cellPosition].top,     // позиции нужной клетки из объекта positions
+                left: cells[idCell].position.left,   // выбранной клетки. Позиционирование происходит путем выбора
+                top: cells[idCell].position.top,     // позиции нужной клетки из объекта positions
             });
 
-            $(cell.currentTarget).addClass('haschecker');
+            $(cell.currentTarget).addClass('hasChecker');
 
-            let positionOfcheckerOnPreviousCell = checker.currentTarget.dataset.cellnumber;
-            $('#cell-' + positionOfcheckerOnPreviousCell).removeClass('haschecker');
+            $('#cell-' + checkerPosition).removeClass('hasChecker');
 
-            checker.currentTarget.dataset.cellnumber = cellPosition;                 // меняем значения атрибутов клетки
-            checker.currentTarget.dataset.slashDiagonal = cellSlashDiagonal;
-            checker.currentTarget.dataset.backSlashDiagonal = cellBackSlashDiagonal;
+            checkers[idChecker] = {
+              id: idChecker,
+              cellNumber: cellPosition,                // меняем значения атрибутов клетки
+              slashDiagonal: cellSlashDiagonal,
+              backSlashDiagonal: cellBackSlashDiagonal,
+              "position": {
+                  number: cellPosition
+              }
+            };
         }
 
         $(checker.currentTarget).removeClass('selected');
+
+        information();
     });
+
+
 });
+
+function information() {
+
+    console.log("--------------------------------------------------------------------------------------------------");
+    console.log("                              Шашки");
+
+    for (let i in checkers) {                       // вывод информации о шашке в консоль
+        console.log(
+            " id: " + checkers[i].id +
+            " cellNumber: " + checkers[i].cellNumber +
+            " position: " + checkers[i].position.number +
+            " slashDiagonal: " + checkers[i].slashDiagonal +
+            " backSlashDiagonal: " + checkers[i].backSlashDiagonal
+        );
+    }
+
+    console.log("                       Клетки");
+
+    for (let i in cells) {                          // вывод информации о клетке в консоль
+        console.log(
+            " id: " + cells[i].id +
+            " cellNumber: " + cells[i].cellNumber +
+            " slashDiagonal: " + cells[i].slashDiagonal +
+            " backSlashDiagonal: " + cells[i].backSlashDiagonal
+        );
+    }
+}
 
 
