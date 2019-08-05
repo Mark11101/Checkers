@@ -31,7 +31,7 @@ body {
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
-    transition: all 0.2s linear;
+    transition: all 0.1s linear;
     margin-top: 13px;
     margin-left: 13px;
     cursor: pointer;
@@ -44,4 +44,8 @@ body {
 
 .checkers__firstPlayer .selected, .checkers__secondPlayer .selected {
     box-shadow: 0 0 10px 5px #60dafb;
+}
+
+.queen {
+    border-color: gold !important;
 }
