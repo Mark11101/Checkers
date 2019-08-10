@@ -1,5 +1,6 @@
 body {
     background-color: #282d33;
+    text-align: center;
 }
 
 .board {
@@ -11,6 +12,12 @@ body {
     left: 50%;
     margin-right: -50%;
     transform: translate(-50%, -50%);
+    text-align: left;
+}
+
+.restart {
+    position: absolute;
+    bottom: 24px;
 }
 
 .cells div {
