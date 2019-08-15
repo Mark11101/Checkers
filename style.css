@@ -38,7 +38,7 @@ body {
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
-    transition: all 0.1s linear;
+    transition: all 0.15s linear;
     margin-top: 13px;
     margin-left: 13px;
     cursor: pointer;

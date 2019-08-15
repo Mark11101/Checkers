@@ -23,7 +23,7 @@ function makeMove(cell) {
     let cellHasChecker      = $(cell).hasClass('hasChecker');
     let isQueen             = $(objChecker).hasClass('queen');
 
-    let checkerCanBeat = isCorrectDiagonal && checkerIsSelected && !cellHasChecker && rightTurn;
+    let checkerCanBeat = isCorrectDiagonal /*&& checkerIsSelected*/ && !cellHasChecker && rightTurn;
 
     let selectedCellRowID    = $(cell).parent().attr("id").replace(/[^\d]/g, ''); // находим номер строки нажатой клетки
     let selectedCheckerRowID = $('#cell-' + checkerPosition).parent().attr("id").replace(/[^\d]/g, ''); // и шашки
@@ -92,7 +92,7 @@ function makeMove(cell) {
 
             for (let j in checkers) {
 
-                initializeVariables(j); // 290 строка (инициализация переменных выше)
+                initializeVariables(j); // 290 строка (инициализация переменных, которые находятся выше)
 
                 if (!$('#' + checkers[i].id).hasClass('queen')) {  // если это обычная шашка
 
@@ -182,7 +182,7 @@ function makeMove(cell) {
 
                     let strikingHasSameColor = checkers[i].color === checkers[idChecker].color;
 
-                    if ((beatenHasDiffColor) && (beatenIsDisplayed) && strikingHasSameColor && strikingIsDisplayed) {
+                    if (beatenHasDiffColor && beatenIsDisplayed && strikingHasSameColor && strikingIsDisplayed) {
                         checkIfQueenShouldBeat();
                     }
 
@@ -489,6 +489,10 @@ function makeMove(cell) {
 
         checkIfCheckerShouldBeQueen();
         checkIfThereIsWinner();
+
+        if ($('.checkers__firstPlayer').hasClass('turn')) {
+            computerMakeMove();
+        }
     }
 
     function makeBeat() {
@@ -558,12 +562,17 @@ function makeMove(cell) {
             }
         } else if ((checkerShouldBeat || queenShouldBeat) && strikingCheckerID !== objChecker.id && amountStrikingCheckers > 1) {
 
-            for (let i in checkers) {
+            $('.checkers__firstPlayer').toggleClass('turn');
+            $('.checkers__secondPlayer').toggleClass('turn');
+
+            $(objChecker).removeClass('selected');
+
+            /*for (let i in checkers) {
 
                 if (checkers[i].id !== objChecker.id) {
                     $('#' + checkers[i].id).addClass('cantMove');
                 }
-            }
+            }*/
         }
     }
 
@@ -649,6 +658,8 @@ function makeMove(cell) {
                     checkerHasFreeMove = isCorrectDiagonal && !cellHasChecker && checkerIsOpponent &&
                                          cellIsNextToChecker && checkerIsDisplayed && isOrdinaryChecker;
 
+                    //alert(checkerHasFreeMove);
+
                     if (checkerHasFreeMove) {
                         break;
                     }
@@ -659,7 +670,7 @@ function makeMove(cell) {
                 }
             }
 
-            if (!checkerHasFreeMove && !checkerShouldBeat) {
+            if (!checkerHasFreeMove && !checkerShouldBeat && !queenCanMove) {
 
                 if ($('.checkers__firstPlayer').hasClass('turn')) {
                     alert("White won!");

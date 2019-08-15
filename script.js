@@ -19,11 +19,13 @@ $('.checker').on('click', (checker) => {
 
 $('.cell').on('click', (cell) => {
     makeMove(cell.currentTarget); // logic.js
+    //computerMakeMove();
 });
 
 
 $('.restart').on('click', () => {
     location.reload();
 });
+
 
 information();
