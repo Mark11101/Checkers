@@ -1,6 +1,6 @@
-function computerMakeMove() {
+let computerMakeMove = () => {
 
-    function calcRandomCheckers(min, max, num) {
+    let calcRandomCheckers = (min, max, num) => {
 
         let i, arr = [], res = [];
 
@@ -13,7 +13,7 @@ function computerMakeMove() {
         }
 
         return res;
-    }
+    };
 
     let arr = calcRandomCheckers(1, 12, 12);
 
@@ -66,7 +66,7 @@ function computerMakeMove() {
 
         let checkerOnEdgeColumn;
 
-        function initializeVariables(arrOfCellNumbers) {
+        let initializeVariables = (arrOfCellNumbers) => {
 
             if (checkerRowID < 7) {
 
@@ -81,27 +81,27 @@ function computerMakeMove() {
                 idLeftCellBottom = leftCellBottom.id.replace(/[^\d]/g, '');
                 idRightCellBottom = rightCellBottom.id.replace(/[^\d]/g, '');
 
-                beatenCheckerOnLeftEdgeColumn = cells[idLeftCellBottom].column === "edgeColumn";
+                beatenCheckerOnLeftEdgeColumn = cells[idLeftCellBottom].column   === "edgeColumn";
                 beatenCheckerOnRightEdgeColumn = cells[idRightCellBottom].column === "edgeColumn";
             }
 
             if (checkerRowID >= 2) {
 
-                leftCellTop = document.getElementById('cell-' + (checkerPosition - arrOfCellNumbers[2]));
+                leftCellTop  = document.getElementById('cell-' + (checkerPosition - arrOfCellNumbers[2]));
                 rightCellTop = document.getElementById('cell-' + (checkerPosition - arrOfCellNumbers[3]));
 
-                idLeftCellTop = leftCellTop.id.replace(/[^\d]/g, '');
+                idLeftCellTop  = leftCellTop.id.replace(/[^\d]/g, '');
                 idRightCellTop = rightCellTop.id.replace(/[^\d]/g, '');
             }
 
-            leftBeatingCellBottom = document.getElementById('cell-' + (checkerPosition + 7));
+            leftBeatingCellBottom  = document.getElementById('cell-' + (checkerPosition + 7));
             rightBeatingCellBottom = document.getElementById('cell-' + (checkerPosition + 9));
 
-            leftBeatingCellTop = document.getElementById('cell-' + (checkerPosition - 9));
+            leftBeatingCellTop  = document.getElementById('cell-' + (checkerPosition - 9));
             rightBeatingCellTop = document.getElementById('cell-' + (checkerPosition - 7));
 
             checkerOnEdgeColumn = cells[checkerPosition].column === "edgeColumn";
-        }
+        };
 
         if (checkerRowID % 2 === 0) {
 
@@ -145,9 +145,9 @@ function computerMakeMove() {
                 }
             }
 
-            if ((opponentCheckerOnRightCellBottom || opponentCheckerOnRightCellTop) && !beatenCheckerOnRightEdgeColumn && idRightCellBottom < 29) {
+            if ((opponentCheckerOnRightCellBottom || opponentCheckerOnRightCellTop) && !beatenCheckerOnRightEdgeColumn) {
 
-                if (!$(rightBeatingCellBottom).hasClass('hasChecker') && opponentCheckerOnRightCellBottom) {
+                if (!$(rightBeatingCellBottom).hasClass('hasChecker') && opponentCheckerOnRightCellBottom && idRightCellBottom < 29) {
                     makeMove(rightBeatingCellBottom);
                 }
 
@@ -162,7 +162,7 @@ function computerMakeMove() {
                 makeMove(rightCellBottom);
             }
 
-        } else {
+        } else if (checkerRowID % 2 !== 0) {
 
             let arrOfCellNumbers = [3, 4, 5, 4];
             initializeVariables(arrOfCellNumbers);
@@ -244,4 +244,4 @@ function computerMakeMove() {
             }
         }
     }
-}
+};

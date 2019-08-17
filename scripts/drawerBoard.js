@@ -2,7 +2,7 @@
 let checkers = {};
 let cells    = {};
 
-function drawBoard() {
+let drawBoard = () => {
 
     for (let i = 0; i < 8; i++) {
 
@@ -125,4 +125,4 @@ function drawBoard() {
 
     information();
 
-}
+};
