@@ -22,7 +22,7 @@ makeMove = (cell) => {
     let cellHasChecker      = $(cell).hasClass('hasChecker');
     let isQueen             = $(objChecker).hasClass('queen');
 
-    let checkerCanBeat = isCorrectDiagonal /*&& checkerIsSelected*/ && !cellHasChecker && rightTurn;
+    let checkerCanBeat = isCorrectDiagonal && !cellHasChecker && rightTurn;
 
     let selectedCellRowID    = $(cell).parent().attr("id").replace(/[^\d]/g, ''); // находим номер строки нажатой клетки
     let selectedCheckerRowID = $('#cell-' + checkerPosition).parent().attr("id").replace(/[^\d]/g, ''); // и шашки
@@ -79,8 +79,8 @@ makeMove = (cell) => {
 
                 }
 
-                strikingCheckerRowID = $('#cell-' + +strikingCheckerPosition).parent().attr("id").replace(/[^\d]/g, '');
-                beatenCheckerRowID = $('#cell-' + +beatenCheckerPosition).parent().attr("id").replace(/[^\d]/g, '');
+                strikingCheckerRowID = $(`#cell-${+strikingCheckerPosition}`).parent().attr("id").replace(/[^\d]/g, '');
+                beatenCheckerRowID = $(`#cell-${+beatenCheckerPosition}`).parent().attr("id").replace(/[^\d]/g, '');
 
                 beatenOnEdgeColumn = cells[beatenCheckerPosition].column === "edgeColumn";
                 beatenOnEdgeRow = (+beatenCheckerRowID === 0) || (+beatenCheckerRowID === 7);
@@ -91,11 +91,11 @@ makeMove = (cell) => {
 
             for (let j in checkers) {
 
-                initializeVariables(j); // 290 строка (инициализация переменных, которые находятся выше)
+                initializeVariables(j); // инициализация переменных, которые находятся выше
 
                 if (!$('#' + checkers[i].id).hasClass('queen')) {  // если это обычная шашка
 
-                    if ((beatenHasDiffColor) && (beatenIsDisplayed) && checkersAreClose && strikingHasDiffColor && strikingIsDisplayed) {
+                    if (beatenHasDiffColor && beatenIsDisplayed && checkersAreClose && strikingHasDiffColor && strikingIsDisplayed) {
                         checkIfOrdinaryCheckerShouldBeat();
                     }
 
@@ -107,7 +107,7 @@ makeMove = (cell) => {
 
                                 if (checkIfCanBeat("-", 4) && checkIfCanBeat("+", 5)) {
 
-                                    initialVariablesIfCheckerShouldBeat(); // 140 строка
+                                    initialVariablesIfCheckerShouldBeat();
                                 }
 
                             } else {
@@ -145,11 +145,11 @@ makeMove = (cell) => {
 
                         function checkIfCellHasChecker(operator, cellNumber) { // функция проверяет есть ли рядом с шашкой другие шашки
 
-                            if ((operator === "-") && ($('#cell-' + (+beatenCheckerPosition - cellNumber)).hasClass('hasChecker'))) {
+                            if ((operator === "-") && ($(`#cell-${+beatenCheckerPosition - cellNumber}`).hasClass('hasChecker'))) {
                                 return true;
                             }
 
-                            if ((operator === "+") && ($('#cell-' + (+beatenCheckerPosition + cellNumber)).hasClass('hasChecker'))) {
+                            if ((operator === "+") && ($(`#cell-${+beatenCheckerPosition + cellNumber}`).hasClass('hasChecker'))) {
                                 return true;
                             }
                         }
@@ -193,7 +193,7 @@ makeMove = (cell) => {
 
                                 if (checkIfCanBeat("-", 4) && checkIfCanBeat("+", 5)) {
 
-                                    initialVariablesIfQueenShouldBeat() // 226 строка
+                                    initialVariablesIfQueenShouldBeat()
                                 }
 
                             } else {
@@ -231,11 +231,11 @@ makeMove = (cell) => {
 
                         function checkIfCellHasChecker(operator, cellNumber) {
 
-                            if ((operator === "-") && ($('#cell-' + (+beatenCheckerPosition - cellNumber)).hasClass('hasChecker'))) {
+                            if ((operator === "-") && ($(`#cell-${+beatenCheckerPosition - cellNumber}`).hasClass('hasChecker'))) {
                                 return true;
                             }
 
-                            if ((operator === "+") && ($('#cell-' + (+beatenCheckerPosition + cellNumber)).hasClass('hasChecker'))) {
+                            if ((operator === "+") && ($(`#cell-${+beatenCheckerPosition + cellNumber}`).hasClass('hasChecker'))) {
                                 return true;
                             }
                         }
@@ -298,7 +298,7 @@ makeMove = (cell) => {
                         queenCanBeat = true;
                         queenCanMove = true;
 
-                        calculateBeatenCellNum(operator, arrNumbers); // в зависимости от четности строки функция вычислит номер клетки битой шашки
+                        calculateBeatenCellNum(operator, ...arrNumbers); // в зависимости от четности строки функция вычислит номер клетки битой шашки
 
                         amountCheckersOnDiagonal++;
 
@@ -341,12 +341,12 @@ makeMove = (cell) => {
             if (isAfterNextRow) {
 
                 const arrNumbers = [4, 3, 5, 4];
-                calculateBeatenCellNum("-", arrNumbers);
+                calculateBeatenCellNum("-", ...arrNumbers);
 
             } else {
 
                 const arrNumbers = [5, 4, 4, 3];
-                calculateBeatenCellNum("+", arrNumbers);
+                calculateBeatenCellNum("+", ...arrNumbers);
             }
         }
 
@@ -361,17 +361,18 @@ makeMove = (cell) => {
             if (isAfterNextRow) {
 
                 const arrNumbers = [5, 4, 4, 3];
-                calculateBeatenCellNum("+", arrNumbers);
+                calculateBeatenCellNum("+", ...arrNumbers);
 
             } else {
 
                 const arrNumbers = [4, 3, 5, 4];
-                calculateBeatenCellNum("-", arrNumbers);
+                calculateBeatenCellNum("-", ...arrNumbers);
             }
         }
     };
 
-    let calculateBeatenCellNum = (operator, arrNumbers) => {
+    let calculateBeatenCellNum = (operator, firstNumberToCalc, secondNumberToCalc,
+                                            thirdNumberToCalc, fourthNumberToCalc) => {
 
         if (operator === "+") {
 
@@ -379,22 +380,22 @@ makeMove = (cell) => {
 
                 if (isBackSlashDiagonal) {
 
-                    beatenCellNum = +idCell + arrNumbers[0];
+                    beatenCellNum = +idCell + firstNumberToCalc;
 
                 } else {
 
-                    beatenCellNum = +idCell + arrNumbers[1];
+                    beatenCellNum = +idCell + secondNumberToCalc;
                 }
 
             } else {
 
                 if (isBackSlashDiagonal) {
 
-                    beatenCellNum = +idCell + arrNumbers[2];
+                    beatenCellNum = +idCell + thirdNumberToCalc;
 
                 } else {
 
-                    beatenCellNum = +idCell + arrNumbers[3];
+                    beatenCellNum = +idCell + fourthNumberToCalc;
                 }
             }
         }
@@ -405,22 +406,22 @@ makeMove = (cell) => {
 
                 if (isBackSlashDiagonal) {
 
-                    beatenCellNum = +idCell - arrNumbers[0];
+                    beatenCellNum = +idCell - firstNumberToCalc;
 
                 } else {
 
-                    beatenCellNum = +idCell - arrNumbers[1];
+                    beatenCellNum = +idCell - secondNumberToCalc;
                 }
 
             } else {
 
                 if (isBackSlashDiagonal) {
 
-                    beatenCellNum = +idCell - arrNumbers[2];
+                    beatenCellNum = +idCell - thirdNumberToCalc;
 
                 } else {
 
-                    beatenCellNum = +idCell - arrNumbers[3];
+                    beatenCellNum = +idCell - fourthNumberToCalc;
                 }
             }
         }
@@ -501,9 +502,10 @@ makeMove = (cell) => {
 
             for (let i in checkers) {
 
-                let objectCheckersHasNeededCellNum = checkers[i].cellNumber === beatenCellNum;
+                let checkerIsDisplayed   = $('#' + checkers[i].id).css('display') !== 'none';
                 let checkerBreaksBeating = $(objChecker).hasClass('cantMove');
-                let checkerIsDisplayed = $('#' + checkers[i].id).css('display') !== 'none';
+
+                let objectCheckersHasNeededCellNum = checkers[i].cellNumber === beatenCellNum;
 
                 let beatenCheckerIsNotFriendly = ((checkers[i].id > 12) && (idChecker < 13)) ||  // данная проверка необходима, чтобы шашка не могла перескакивать
                                                  ((checkers[i].id < 13) && (idChecker > 12));    // через дружественные
@@ -528,7 +530,8 @@ makeMove = (cell) => {
     function checkIfTurnShouldToggle() {
 
         checkerShouldBeat = false;
-        queenShouldBeat = false;
+        queenShouldBeat   = false;
+
         amountStrikingCheckers = 0;
 
         checkIfCheckerShouldBeat();
@@ -641,9 +644,11 @@ makeMove = (cell) => {
                     let cellRowID    = $('#cell-' + +cells[j].position.number).parent().attr("id").replace(/[^\d]/g, '');
 
                     let checkerColor =  $('#' + checkers[i].id).color;
-                    let queenExist = $('.checker').hasClass('queen') && $('.checker').hasClass(checkerColor) && $('.checker').css('display') !== 'none';
+                    let queenExist = $('.checker').hasClass(checkerColor + ' queen');
 
-                    let ordinaryChecker = !$('#' + checkers[i].id).hasClass('queen');
+                    if (queenExist) {
+                        console.log("fff");
+                    }
 
                     let cellIsNextToChecker;
 
@@ -653,8 +658,8 @@ makeMove = (cell) => {
                         cellIsNextToChecker = +cellRowID - +checkerRowID === 1;
                     }
 
-                    checkerHasFreeMove = (isCorrectDiagonal && !cellHasChecker && checkerIsOpponent &&
-                                         cellIsNextToChecker && checkerIsDisplayed && isOrdinaryChecker) || (queenExist && ordinaryChecker);
+                    checkerHasFreeMove = (isCorrectDiagonal  && !cellHasChecker    && checkerIsOpponent  &&
+                                         cellIsNextToChecker && checkerIsDisplayed && isOrdinaryChecker) || queenExist;
 
                     if (checkerHasFreeMove) {
                         break;

@@ -27,5 +27,4 @@ $('.restart').on('click', () => {
     location.reload();
 });
 
-
 information();

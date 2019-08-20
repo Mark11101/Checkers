@@ -1,5 +1,6 @@
 
 const positions = {
+
     "1": {
         left: "100px",
         top: "0px",

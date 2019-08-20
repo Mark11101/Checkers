@@ -66,39 +66,40 @@ let computerMakeMove = () => {
 
         let checkerOnEdgeColumn;
 
-        let initializeVariables = (arrOfCellNumbers) => {
+        let initializeVariables = (addingNumberForLeftCellBottom, addingNumberForRightCellBottom,
+                                   subtractingNumberForLeftCellTop, subtractingNumberForRightCellTop) => {
 
             if (checkerRowID < 7) {
 
-                leftCellBottom = document.getElementById('cell-' + (checkerPosition + arrOfCellNumbers[0]));
+                leftCellBottom = document.getElementById(`cell-${checkerPosition + addingNumberForLeftCellBottom}`);
 
                 if (checkerPosition !== 28) {
-                    rightCellBottom = document.getElementById('cell-' + (checkerPosition + arrOfCellNumbers[1]));
+                    rightCellBottom = document.getElementById(`cell-${checkerPosition + addingNumberForRightCellBottom}`);
                 } else {
                     rightCellBottom = document.getElementById('cell-28');
                 }
 
-                idLeftCellBottom = leftCellBottom.id.replace(/[^\d]/g, '');
+                idLeftCellBottom  = leftCellBottom.id.replace(/[^\d]/g, '');
                 idRightCellBottom = rightCellBottom.id.replace(/[^\d]/g, '');
 
-                beatenCheckerOnLeftEdgeColumn = cells[idLeftCellBottom].column   === "edgeColumn";
+                beatenCheckerOnLeftEdgeColumn  = cells[idLeftCellBottom].column   === "edgeColumn";
                 beatenCheckerOnRightEdgeColumn = cells[idRightCellBottom].column === "edgeColumn";
             }
 
             if (checkerRowID >= 2) {
 
-                leftCellTop  = document.getElementById('cell-' + (checkerPosition - arrOfCellNumbers[2]));
-                rightCellTop = document.getElementById('cell-' + (checkerPosition - arrOfCellNumbers[3]));
+                leftCellTop  = document.getElementById(`cell-${checkerPosition - subtractingNumberForLeftCellTop}`);
+                rightCellTop = document.getElementById(`cell-${checkerPosition - subtractingNumberForRightCellTop}`);
 
                 idLeftCellTop  = leftCellTop.id.replace(/[^\d]/g, '');
                 idRightCellTop = rightCellTop.id.replace(/[^\d]/g, '');
             }
 
-            leftBeatingCellBottom  = document.getElementById('cell-' + (checkerPosition + 7));
-            rightBeatingCellBottom = document.getElementById('cell-' + (checkerPosition + 9));
+            leftBeatingCellBottom  = document.getElementById(`cell-${checkerPosition + 7}`);
+            rightBeatingCellBottom = document.getElementById(`cell-${checkerPosition + 9}`);
 
-            leftBeatingCellTop  = document.getElementById('cell-' + (checkerPosition - 9));
-            rightBeatingCellTop = document.getElementById('cell-' + (checkerPosition - 7));
+            leftBeatingCellTop  = document.getElementById(`cell-${checkerPosition - 9}`);
+            rightBeatingCellTop = document.getElementById(`cell-${checkerPosition - 7}`);
 
             checkerOnEdgeColumn = cells[checkerPosition].column === "edgeColumn";
         };
@@ -106,7 +107,7 @@ let computerMakeMove = () => {
         if (checkerRowID % 2 === 0) {
 
             let arrOfCellNumbers = [4, 5, 4, 3];
-            initializeVariables(arrOfCellNumbers);
+            initializeVariables(...arrOfCellNumbers);
 
             for (let i in checkers) {
 
@@ -119,7 +120,6 @@ let computerMakeMove = () => {
                     else if (checkers[i].cellNumber === +idLeftCellTop) {
                         opponentCheckerOnLeftCellTop = true;
                     }
-
 
                     if (!checkerOnEdgeColumn) {
 
@@ -165,7 +165,7 @@ let computerMakeMove = () => {
         } else if (checkerRowID % 2 !== 0) {
 
             let arrOfCellNumbers = [3, 4, 5, 4];
-            initializeVariables(arrOfCellNumbers);
+            initializeVariables(...arrOfCellNumbers);
 
             for (let i in checkers) {
 

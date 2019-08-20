@@ -15,19 +15,8 @@ let drawBoard = () => {
 
         for (let j = 0; j < 4; j++) {
 
-            cells[cellCnt] = [];
-            cells[cellCnt].position = [];
-
-            cells[cellCnt].push(cellCnt);
-
-            cells[cellCnt].id                = cellCnt;
-            cells[cellCnt].cellNumber        = cellCnt;
-            cells[cellCnt].position.number   = cellCnt;
-            cells[cellCnt].position.left     = positions[cellCnt].left;
-            cells[cellCnt].position.top      = positions[cellCnt].top;
-            cells[cellCnt].slashDiagonal     = slashDiagonal[cellCnt];
-            cells[cellCnt].backSlashDiagonal = backslashDiagonal[cellCnt];
-            cells[cellCnt].column            = "usualColumn";
+            cells[cellCnt] = new Cell(cellCnt, cellCnt, slashDiagonal[cellCnt], backslashDiagonal[cellCnt], "usualColumn",
+                                      cellCnt, positions[cellCnt].left, positions[cellCnt].top);
 
             if (i % 2 === 0) {
 
@@ -64,19 +53,8 @@ let drawBoard = () => {
 
     for (let i = 1; i < 25; i++) {
 
-        checkers[i] = [];
-        checkers[i].position = [];
-
-        checkers[i].push(i);
-
-        checkers[i].id                = i;
-        checkers[i].cellNumber        = i;
-        checkers[i].position.number   = i;
-        checkers[i].position.left     = positions[i].left;
-        checkers[i].position.top      = positions[i].top;
-        checkers[i].slashDiagonal     = slashDiagonal[i];
-        checkers[i].backSlashDiagonal = backslashDiagonal[i];
-        checkers[i].color             = "black";
+        checkers[i] = new Checker(i, i, slashDiagonal[i], backslashDiagonal[i], "black",
+                                  i, positions[i].left, positions[i].top);
 
         if (i < 13) { // в зависимости от условия добавляем белые или черные шашки
 
@@ -124,5 +102,4 @@ let drawBoard = () => {
     }
 
     information();
-
 };
