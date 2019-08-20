@@ -38,9 +38,9 @@ let drawBoard = () => {
 
             $('#row-' + i).css('marginTop', 100 * i + 'px').append(cell); // размещаем строки по рядам и добавляем ячейку
 
-            $('#cell-' + cellCnt).text(String(cellCnt)).css({
+            $('#cell-' + cellCnt)/*.text(String(cellCnt))*/.css({
                 left: 200 * j + "px",    // смещаем ее относительно соседней
-                color: "white"
+                //color: "white"
             });
 
             cellCnt++;

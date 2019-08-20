@@ -18,8 +18,11 @@ $('.checker').on('click', (checker) => {
 
 
 $('.cell').on('click', (cell) => {
-    makeMove(cell.currentTarget); // logic.js
-    //computerMakeMove();
+
+    if (objChecker !== undefined) {
+        makeMove(cell.currentTarget); // logic.js
+    }
+
 });
 
 
